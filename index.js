@@ -11,8 +11,8 @@ const dbhandler = require('./server/dbhandler');
 
 console.log(typeof(dbhandler))
 const lineConfig = {
-        channelAccessToken: '4SvaWSSOxYOYa9FyYtF6pTc3uOiBY0QbGSnCLEu6kQ28AJ5287n8groLeOga1GIbDOgJ4sN/Z+zboVcliVEohxMHFhXJUUeRDBdnBDKUgBZswuPIv9Q+8jhj3TBsVHl6iSPtV6YMHcEXF0Ad2xcyXgdB04t89/1O/w1cDnyilFU=',
-        channelSecret: 'c3fb1a023f2f0e297ea3c8fceb3d5cd3'
+        channelAccessToken: process.env.channelAccessToken,
+        channelSecret: process.env.channelSecret
     }
     // create LINE SDK client
 const client = new line.Client(lineConfig);
