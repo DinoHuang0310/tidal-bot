@@ -3,9 +3,9 @@ let linebot = require('linebot');
 
 // 初始化 line bot 需要的資訊，在 Heroku 上的設定的 Config Vars，可參考 Step2
 let bot = linebot({
-    channelId: process.env.LINE_CHANNEL_ID,
-    channelSecret: process.env.LINE_CHANNEL_SECRET,
-    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN
+    channelId: '1654690588',
+    channelSecret: 'c3fb1a023f2f0e297ea3c8fceb3d5cd3',
+    channelAccessToken: '4SvaWSSOxYOYa9FyYtF6pTc3uOiBY0QbGSnCLEu6kQ28AJ5287n8groLeOga1GIbDOgJ4sN/Z+zboVcliVEohxMHFhXJUUeRDBdnBDKUgBZswuPIv9Q+8jhj3TBsVHl6iSPtV6YMHcEXF0Ad2xcyXgdB04t89/1O/w1cDnyilFU='
 });
 
 // 當有人傳送訊息給 Bot 時
