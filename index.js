@@ -7,7 +7,7 @@ const moment = require('moment');
 // const { GET_TIDAL_BY_DATE } = require('./api');
 // const { channelAccessToken, channelSecret, port } = require('./config');
 // const tidalHandler = require('./handler/tidalHandler');
-const dbhandler = require('/server/dbhandler');
+const dbhandler = require('./server/dbhandler');
 
 console.log(typeof(dbhandler))
 const lineConfig = {
