@@ -4,10 +4,10 @@ const line = require('@line/bot-sdk');
 const express = require('express');
 const getJSON = require('get-json');
 const moment = require('moment');
-const { GET_TIDAL_BY_DATE } = require('./api');
+// const { GET_TIDAL_BY_DATE } = require('./api');
 // const { channelAccessToken, channelSecret, port } = require('./config');
-const tidalHandler = require('./handler/tidalHandler');
-const dbHandler = require('./server/dbHandler');
+// const tidalHandler = require('./handler/tidalHandler');
+// const dbHandler = require('./server/dbHandler');
 
 const lineConfig = {
         channelAccessToken: '4SvaWSSOxYOYa9FyYtF6pTc3uOiBY0QbGSnCLEu6kQ28AJ5287n8groLeOga1GIbDOgJ4sN/Z+zboVcliVEohxMHFhXJUUeRDBdnBDKUgBZswuPIv9Q+8jhj3TBsVHl6iSPtV6YMHcEXF0Ad2xcyXgdB04t89/1O/w1cDnyilFU=',
