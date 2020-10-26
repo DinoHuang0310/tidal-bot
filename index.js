@@ -7,8 +7,9 @@ const moment = require('moment');
 // const { GET_TIDAL_BY_DATE } = require('./api');
 // const { channelAccessToken, channelSecret, port } = require('./config');
 // const tidalHandler = require('./handler/tidalHandler');
-// const dbHandler = require('./server/dbHandler');
+const dbHandler = require('../server/dbHandler');
 
+console.log(typeof(dbHandler))
 const lineConfig = {
         channelAccessToken: '4SvaWSSOxYOYa9FyYtF6pTc3uOiBY0QbGSnCLEu6kQ28AJ5287n8groLeOga1GIbDOgJ4sN/Z+zboVcliVEohxMHFhXJUUeRDBdnBDKUgBZswuPIv9Q+8jhj3TBsVHl6iSPtV6YMHcEXF0Ad2xcyXgdB04t89/1O/w1cDnyilFU=',
         channelSecret: 'c3fb1a023f2f0e297ea3c8fceb3d5cd3'
