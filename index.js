@@ -22,7 +22,7 @@ const app = express();
 
 // register a webhook handler with middleware
 // about the middleware, please refer to doc
-app.post('/callback', line.middleware(lineConfig), (req, res) => {
+app.post('/', line.middleware(lineConfig), (req, res) => {
     Promise
         .all(req.body.events.map(handleEvent))
         .then((result) => res.json(result))
@@ -45,6 +45,7 @@ function handleEvent(event) {
 }
 
 // listen on port
-app.listen('3000', () => {
-    console.log(`cool now listening on 3000`);
+var server = app.listen(process.env.PORT || 8080, function() {
+    var port = server.address().port;
+    console.log("App now running on port", port);
 });
