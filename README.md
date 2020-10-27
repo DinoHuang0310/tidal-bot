@@ -11,4 +11,4 @@ LINE機器人 查詢台灣各地潮汐
 
 ## URL
 
-![image]https://github.com/DinoHuang0310/tidal-bot/blob/main/tidal-bot.png
+![image](https://github.com/DinoHuang0310/tidal-bot/blob/main/tidal-bot.png)
