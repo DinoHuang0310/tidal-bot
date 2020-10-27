@@ -13,6 +13,9 @@ LINE機器人 查詢台灣各地潮汐
 三芝潮汐  
   
   
-## URL
+### URL
   
 ![image](https://github.com/DinoHuang0310/tidal-bot/blob/main/tidal-bot.png)
+  
+### 資料來源  
+中央氣象局開放資料平臺
