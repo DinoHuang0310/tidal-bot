@@ -10,11 +10,13 @@ const tidalhandler = require('./handler/tidalhandler');
 
 console.log(typeof(tidalhandler))
 
-// create LINE SDK client
-const client = new line.Client({
+const lineConfig = {
     channelAccessToken: process.env.channelAccessToken,
     channelSecret: process.env.channelSecret
-});
+}
+
+// create LINE SDK client
+const client = new line.Client(lineConfig);
 
 let tidalData = [];
 getTidalData();
