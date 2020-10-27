@@ -51,7 +51,7 @@ function handleEvent(event) {
         });
     } else if (tidalRegex.test(userInputStr)) {
         // 問潮汐
-        const echo = tidalHandler(event.source.userId, userInputStr, tidalData);
+        const echo = tidalhandler(event.source.userId, userInputStr, tidalData);
         return client.replyMessage(event.replyToken, echo);
     } else {
         return client.replyMessage(event.replyToken, [{
