@@ -1,6 +1,4 @@
 const moment = require('moment');
-const dbhandler = require('../server/dbhandler');
-
 
 // location = user填入的地點
 // date = 今天、明天、後天或空字串
@@ -75,8 +73,6 @@ module.exports = (userID, userInputStr, tidalData) => {
             return item.locationName.indexOf(location) != -1
         });
         if (target.length === 1) {
-            // 查詢結果1筆 寫入user常用關鍵字後回覆
-            dbhandler.setKeyword(userID, location);
             return setEchoText(target[0], dateToVal());
         } else if (target.length < 1) {
             // 該關鍵字查無資料

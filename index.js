@@ -6,16 +6,12 @@ const getJSON = require('get-json');
 const moment = require('moment');
 const { GET_TIDAL_BY_DATE } = require('./api');
 const tidalhandler = require('./handler/tidalhandler');
-// const dbhandler = require('./server/dbhandler');
-
-console.log(typeof(tidalhandler))
 
 const lineConfig = {
-    channelAccessToken: process.env.channelAccessToken,
-    channelSecret: process.env.channelSecret
-}
-
-// create LINE SDK client
+        channelAccessToken: process.env.channelAccessToken,
+        channelSecret: process.env.channelSecret
+    }
+    // create LINE SDK client
 const client = new line.Client(lineConfig);
 
 let tidalData = [];
@@ -47,6 +43,27 @@ function handleEvent(event) {
     // 語句檢查
     const userInputStr = event.message.text.replace(/\s+/g, ""); // 去空白
     const tidalRegex = /^[^a-zA-Z0-9]{2,}潮汐/; // 開頭非英文或數字,接潮汐
+    if (event.message.text === '說明') {
+        // 說明
+        return client.replyMessage(event.replyToken, {
+            type: 'text',
+            text: '【查詢台灣各地潮汐】\n\n查詢格式為:\n【地點】+潮汐+【今天/明天/後天】\n(時間不填則搜尋今天)\n\n【範例如下】:\n石門潮汐明天\n三芝潮汐'
+        });
+    } else if (tidalRegex.test(userInputStr)) {
+        // 問潮汐
+        const echo = tidalHandler(event.source.userId, userInputStr, tidalData);
+        return client.replyMessage(event.replyToken, echo);
+    } else {
+        return client.replyMessage(event.replyToken, [{
+                type: 'text',
+                text: `公蝦咪挖溝 聽某喇`
+            },
+            {
+                type: 'text',
+                text: `請輸入:說明`
+            }
+        ]);
+    }
 
 }
 
@@ -64,8 +81,10 @@ function getTidalData() {
     });
 }
 
+setInterval(function() { getTidalData() }, 1800000);
+
 // listen on port
 var server = app.listen(process.env.PORT || 8080, function() {
     var port = server.address().port;
-    console.log("App now running on port", port);
+    console.log("哩公蝦毀的port ->", port);
 });
