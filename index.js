@@ -68,6 +68,8 @@ function handleEvent(event) {
 }
 
 // getTidalData
+const timeout = 25 * 60 * 1000;
+
 function getTidalData() {
     const fromDate = moment().format('YYYY-MM-DD');
     const toDate = moment().add(3, 'days').format('YYYY-MM-DD');
@@ -81,7 +83,7 @@ function getTidalData() {
     });
 }
 
-setInterval(function() { getTidalData() }, 1800000);
+setInterval(function() { getTidalData() }, timeout);
 
 // listen on port
 var server = app.listen(process.env.PORT || 8080, function() {
