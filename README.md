@@ -1,30 +1,15 @@
-# Echo Bot
+# tidal-bot
 
-An example LINE bot just to echo messages
+## 潮汐機器人
 
-## How to use
+LINE機器人 查詢台灣各地潮汐
 
-### Install deps
+### 使用方式
+【地點】 + 潮汐 + 【今天/明天/後天】
+(時間不填則搜尋今天)
 
-``` shell
-$ npm install
-```
 
-### Configuration
-
-``` shell
-$ export CHANNEL_SECRET=YOUR_CHANNEL_SECRET
-$ export CHANNEL_ACCESS_TOKEN=YOUR_CHANNEL_ACCESS_TOKEN
-$ export PORT=1234
-```
-
-### Run
-
-``` shell
-$ node .
-```
-
-## Webhook URL
+## URL
 
 ```
 https://your.base.url/callback
