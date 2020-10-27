@@ -1,6 +1,7 @@
 const moment = require('moment');
 const dbhandler = require('../server/dbhandler');
 
+
 // location = user填入的地點
 // date = 今天、明天、後天或空字串
 module.exports = (userID, userInputStr, tidalData) => {
