@@ -6,7 +6,7 @@ const config = {
     password: process.env.Password,
     database: process.env.Database,
     port: process.env.Port,
-    ssl: true
+    ssl: { rejectUnauthorized: false }
 };
 
 module.exports = () => {
