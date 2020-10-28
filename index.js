@@ -6,6 +6,7 @@ const getJSON = require('get-json');
 const moment = require('moment');
 const { GET_TIDAL_BY_DATE } = require('./api');
 const tidalhandler = require('./handler/tidalhandler');
+const dbhandler = require('./handler/dbhandler');
 
 const lineConfig = {
         channelAccessToken: process.env.channelAccessToken,
@@ -53,6 +54,8 @@ function handleEvent(event) {
         // 問潮汐
         const echo = tidalhandler(event.source.userId, userInputStr, tidalData);
         return client.replyMessage(event.replyToken, echo);
+    } else if (event.message.text === 'test') {
+        dbhandler();
     } else {
         return client.replyMessage(event.replyToken, [{
                 type: 'text',
