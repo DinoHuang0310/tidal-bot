@@ -20,5 +20,6 @@ module.exports = () => {
 
     function queryDatabase() {
         console.log('連線成功!')
+        client.end(console.log('Closed client connection'));
     }
 }
