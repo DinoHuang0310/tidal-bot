@@ -1,11 +1,11 @@
 const pg = require('pg');
 
 const config = {
-    host: process.env.Host,
-    user: process.env.User,
-    password: process.env.Password,
-    database: process.env.Database,
-    port: process.env.Port,
+    host: process.env.Host || require('../config').Host,
+    user: process.env.User || require('../config').User,
+    password: process.env.Password || require('../config').Password,
+    database: process.env.Database || require('../config').Database,
+    port: process.env.Port || require('../config').Port,
     ssl: { rejectUnauthorized: false }
 };
 
