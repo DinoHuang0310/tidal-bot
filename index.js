@@ -8,9 +8,12 @@ const { GET_TIDAL_BY_DATE } = require('./api');
 const tidalhandler = require('./handler/tidalhandler');
 const dbhandler = require('./handler/dbhandler');
 
+const linechannelAccessToken = process.env.channelAccessToken || require('./config').channelAccessToken;
+const linechannelSecret = process.env.channelSecret || require('./config').channelSecret;
+
 const lineConfig = {
-        channelAccessToken: process.env.channelAccessToken,
-        channelSecret: process.env.channelSecret
+        channelAccessToken: linechannelAccessToken,
+        channelSecret: linechannelSecret
     }
     // create LINE SDK client
 const client = new line.Client(lineConfig);
