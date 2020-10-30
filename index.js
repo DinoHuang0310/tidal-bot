@@ -4,6 +4,7 @@ const line = require('@line/bot-sdk');
 const express = require('express');
 const getJSON = require('get-json');
 const moment = require('moment');
+const querystring = require('querystring');
 const { GET_TIDAL_BY_DATE } = require('./api');
 const { getTidalByText, getTidalByPostback } = require('./handler/tidalhandler');
 const { insertData, readAllData, getUserById, setKeyword } = require('./handler/dbhandler');
@@ -90,15 +91,15 @@ function handleEvent(event) {
         }
     } else if (event.type === 'postback') {
         // 處理postback
-        return client.replyMessage(event.replyToken,
-            getTidalByPostback(event.source.userId, event.postback.data, tidalData));
+        const data = querystring.parse(event.postback.data);
+        if (data.type === 'flex') {
+            return client.replyMessage(event.replyToken,
+                getTidalByPostback(event.source.userId, data.message, tidalData));
+        }
     } else {
         // 其餘不處理
         return Promise.resolve(null);
     }
-
-
-
 }
 
 // getTidalData

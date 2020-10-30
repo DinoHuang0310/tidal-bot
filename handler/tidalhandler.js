@@ -15,10 +15,11 @@ module.exports = {
 
     // 回覆字串拼接
     setEchoText: (target, date, originalMsg) => {
-        const targetDate = target.validTime[date];
+        const datePlus = module.exports.dateToVal(date);
+        const targetDate = target.validTime[datePlus];
         const tagetDateTidal = targetDate.weatherElement[1].time; // Arry 該日所有潮汐
         const weekdayStr = () => {
-            switch (moment().add(date, 'days').weekday()) {
+            switch (moment().add(datePlus, 'days').weekday()) {
                 case 0:
                     return '日'
                 case 1:
@@ -37,11 +38,11 @@ module.exports = {
         }
         return [{
                 type: 'text',
-                text: `${target.locationName}: \n 日期: ${moment().add(date, 'days').format('YYYY/MM/DD')} (${weekdayStr()}) \n 潮差: ${targetDate.weatherElement[0].elementValue}潮 ${module.exports.echoTidal(tagetDateTidal)}`
+                text: `${target.locationName}: \n 日期: ${moment().add(datePlus, 'days').format('YYYY/MM/DD')} (${weekdayStr()}) \n 潮差: ${targetDate.weatherElement[0].elementValue}潮 ${module.exports.echoTidal(tagetDateTidal)}`
             },
             {
                 type: 'text',
-                text: `你可能需要來點氣象?\nhttps://www.google.com/search?q=${originalMsg}氣象&rlz=1C1CHBD_zh-twTW888TW888&oq=${originalMsg}氣象&aqs=chrome.0.69i59j0l5j0i30.5206j0j7&sourceid=chrome&ie=UTF-8`
+                text: `你可能需要來點氣象?\nhttps://www.google.com/search?q=${originalMsg}氣象${date}&rlz=1C1CHBD_zh-twTW888TW888&oq=${originalMsg}氣象${date}&aqs=chrome.0.69i59j0l5j0i30.5206j0j7&sourceid=chrome&ie=UTF-8`
             }
         ]
     },
@@ -55,7 +56,7 @@ module.exports = {
                 action: {
                     type: "postback",
                     label: element.locationName,
-                    data: `${element.locationName}&${date ? date : '今天'}&${originalLocation}`
+                    data: `type=flex&message=${element.locationName}/${date ? date : '今天'}/${originalLocation}`
                 }
             }
             option.push(obj);
@@ -87,7 +88,7 @@ module.exports = {
     filterDataByLocation: (tidalData, location, date) => {
         const target = module.exports.getTargetData(tidalData, location);
         if (target.length === 1) {
-            return module.exports.setEchoText(target[0], module.exports.dateToVal(date), location);
+            return module.exports.setEchoText(target[0], date, location);
         } else if (target.length < 1) {
             // 該關鍵字查無資料
             return {
@@ -155,8 +156,8 @@ module.exports = {
     },
 
     getTidalByPostback: (userID, userInputStr, tidalData) => {
-        const keyword = userInputStr.split("&"); // 分割 keyword[0]=地點, keyword[1]=時間, keyword[2]=原本搜尋的關鍵字
+        const keyword = userInputStr.split("/"); // 分割 keyword[0]=地點, keyword[1]=時間, keyword[2]=原本搜尋的關鍵字
         const target = module.exports.getTargetData(tidalData, keyword[0]);
-        return module.exports.setEchoText(target[0], module.exports.dateToVal(keyword[1]), keyword[2]);
+        return module.exports.setEchoText(target[0], keyword[1], keyword[2]);
     }
 }
