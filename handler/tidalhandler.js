@@ -1,5 +1,4 @@
 const moment = require('moment');
-const { setKeyword } = require('./dbhandler');
 
 // location = user填入的地點
 // date = 今天、明天、後天或空字串
@@ -42,21 +41,32 @@ module.exports = {
             },
             {
                 type: 'text',
-                text: `你可能需要來點氣象?\nhttps://www.google.com/search?q=${originalMsg}氣象${date}&rlz=1C1CHBD_zh-twTW888TW888&oq=${originalMsg}氣象${date}&aqs=chrome.0.69i59j0l5j0i30.5206j0j7&sourceid=chrome&ie=UTF-8`
+                text: `你可能需要來點氣象?\nhttps://www.google.com/search?q=${originalMsg}氣象&rlz=1C1CHBD_zh-twTW888TW888&oq=${originalMsg}`
             }
         ]
     },
 
     // 建立flex button option
-    createOption: (dataList, date, originalLocation) => {
+    createOption: function(dataList, setting) {
+        dataString = (element) => {
+            const { type, date, originalLocation, user } = setting;
+            switch (type) {
+                case 'addFavorite':
+                    return `type=insert&user=${user}&location=${element.locationName}`;
+                case 'search':
+                    return `type=flex&message=${element.locationName}/${date ? date : '今天'}/${originalLocation}`;
+                case 'deleteFavorite':
+                    return `type=delete&user=${user}&location=${element}`
+            }
+        };
         let option = [];
         dataList.forEach(element => {
             const obj = {
                 type: "button",
                 action: {
                     type: "postback",
-                    label: element.locationName,
-                    data: `type=flex&message=${element.locationName}/${date ? date : '今天'}/${originalLocation}`
+                    label: typeof(element) === 'string' ? element : element.locationName,
+                    data: dataString(element)
                 }
             }
             option.push(obj);
@@ -65,7 +75,7 @@ module.exports = {
     },
 
     // 篩選搜尋結果
-    getTargetData: (tidalData, location) => {
+    getTargetData: function(tidalData, location) {
         return tidalData.filter(item => {
             return item.locationName.indexOf(location) != -1;
         });
@@ -113,7 +123,7 @@ module.exports = {
                     footer: {
                         type: "box",
                         layout: "vertical",
-                        contents: module.exports.createOption(target, date, location)
+                        contents: module.exports.createOption(target, { type: 'search', date: date, originalLocation: location })
                     },
                     styles: {
                         footer: {
@@ -130,7 +140,7 @@ module.exports = {
         }
     },
 
-    getTidalByText: (userID, userInputStr, tidalData) => {
+    getTidalByText: (userInputStr, tidalData) => {
         const keyword = userInputStr.split("潮汐"); // 分割 keyword[0]=地點, keyword[1]=時間
         console.log(keyword)
         if (keyword.length === 2) {
@@ -155,7 +165,7 @@ module.exports = {
         ]
     },
 
-    getTidalByPostback: (userID, userInputStr, tidalData) => {
+    getTidalByPostback: (userInputStr, tidalData) => {
         const keyword = userInputStr.split("/"); // 分割 keyword[0]=地點, keyword[1]=時間, keyword[2]=原本搜尋的關鍵字
         const target = module.exports.getTargetData(tidalData, keyword[0]);
         return module.exports.setEchoText(target[0], keyword[1], keyword[2]);

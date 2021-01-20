@@ -7,7 +7,15 @@ const moment = require('moment');
 const querystring = require('querystring');
 const { GET_TIDAL_BY_DATE } = require('./api');
 const { getTidalByText, getTidalByPostback } = require('./handler/tidalhandler');
-const { insertData, readAllData, getUserById, setKeyword } = require('./handler/dbhandler');
+const {
+    insertData,
+    readAllData,
+    setKeyword,
+    setFavorite,
+    showDeleteList,
+    deleteKeyword,
+    resetTable
+} = require('./handler/dbhandler');
 const admin = process.env.admin || require('./config').admin;
 
 const lineConfig = {
@@ -42,33 +50,33 @@ function handleEvent(event) {
         // 處理文字訊息
         const userInputStr = event.message.text.replace(/\s+/g, ""); // 去空白
         const tidalRegex = /^[^a-zA-Z0-9]{2,}潮汐/; // 開頭非英文或數字,接潮汐
+        const settingRegex = /^新增/; // 新增常用地點
         if (event.message.text === '說明') {
             // 說明
             return client.replyMessage(event.replyToken, {
                 type: 'text',
-                text: `【查詢台灣各地潮汐】\n\n
-                    查詢格式為:\n
-                    【地點】+潮汐+【今天/明天/後天】\n
-                    (時間不填則搜尋今天)\n\n
-                    【範例如下】:\n
-                    石門潮汐明天\n
-                    三芝潮汐`
+                text: `【查詢台灣各地潮汐】\n\n查詢格式為:\n【地點】+潮汐+【今天/明天/後天】\n(時間不填則搜尋今天)\n\n【範例如下】:\n三芝潮汐\n石門潮汐明天`
             });
         } else if (tidalRegex.test(userInputStr)) {
             // 問潮汐
-            const echo = getTidalByText(event.source.userId, userInputStr, tidalData);
+            const echo = getTidalByText(userInputStr, tidalData);
             return client.replyMessage(event.replyToken, echo);
+        } else if (settingRegex.test(userInputStr)) {
+            // 設定常用地點
+            const keyword = userInputStr.split("新增")[1];
+            setFavorite(event.source.userId, keyword, tidalData, function(item) {
+                return client.replyMessage(event.replyToken, item);
+            });
+        } else if (event.message.text === '刪除') {
+            showDeleteList(event.source.userId, function(item) {
+                return client.replyMessage(event.replyToken, item);
+            });
         } else if (event.message.text === 'insert' && isAdmin) {
             insertData();
             return Promise.resolve(null);
-        } else if (event.message.text === 'select' && isAdmin) {
-            getUserById(event.source.userId);
-            return Promise.resolve(null);
-        } else if (event.message.text === 'set' && isAdmin) {
-            setKeyword(event.source.userId, '石門');
-            return Promise.resolve(null);
         } else if (event.message.text === 'read' && isAdmin) {
             readAllData(function(item) {
+                // console.log(item)
                 let str = '';
                 item.forEach((element, index) => {
                     str += `【${index + 1}】 ${element.id}\n${element.keywords}\n`
@@ -78,6 +86,10 @@ function handleEvent(event) {
                     text: str
                 });
             })
+        } else if (event.message.text === 'reset' && isAdmin) {
+            resetTable(function(msg) {
+                return client.replyMessage(event.replyToken, msg);
+            });
         } else {
             return client.replyMessage(event.replyToken, [{
                     type: 'text',
@@ -94,7 +106,15 @@ function handleEvent(event) {
         const data = querystring.parse(event.postback.data);
         if (data.type === 'flex') {
             return client.replyMessage(event.replyToken,
-                getTidalByPostback(event.source.userId, data.message, tidalData));
+                getTidalByPostback(data.message, tidalData));
+        } else if (data.type === 'insert') {
+            setKeyword(event.source.userId, data.location, function(item) {
+                return client.replyMessage(event.replyToken, item);
+            });
+        } else if (data.type === 'delete') {
+            deleteKeyword(event.source.userId, data.location, function(item) {
+                return client.replyMessage(event.replyToken, item);
+            });
         }
     } else {
         // 其餘不處理
