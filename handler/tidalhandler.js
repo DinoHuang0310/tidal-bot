@@ -20,43 +20,46 @@ module.exports = {
         const weekdayStr = () => {
             switch (moment().add(datePlus, 'days').weekday()) {
                 case 0:
-                    return '日'
+                    return '日';
                 case 1:
-                    return '一'
+                    return '一';
                 case 2:
-                    return '二'
+                    return '二';
                 case 3:
-                    return '三'
+                    return '三';
                 case 4:
-                    return '四'
+                    return '四';
                 case 5:
-                    return '五'
+                    return '五';
                 case 6:
-                    return '六'
+                    return '六';
             }
         }
-        return [{
-                type: 'text',
-                text: `${target.locationName}: \n 日期: ${moment().add(datePlus, 'days').format('YYYY/MM/DD')} (${weekdayStr()}) \n 潮差: ${targetDate.weatherElement[0].elementValue}潮 ${module.exports.echoTidal(tagetDateTidal)}`
-            },
-            {
+        let replyMessage = [{
+            type: 'text',
+            text: `${target.locationName}: \n 日期: ${moment().add(datePlus, 'days').format('YYYY/MM/DD')} (${weekdayStr()}) \n 潮差: ${targetDate.weatherElement[0].elementValue}潮 ${module.exports.echoTidal(tagetDateTidal)}`
+        }];
+        if (originalMsg) {
+            replyMessage.push({
                 type: 'text',
                 text: `你可能需要來點氣象?\nhttps://www.google.com/search?q=${originalMsg}氣象&rlz=1C1CHBD_zh-twTW888TW888&oq=${originalMsg}`
-            }
-        ]
+            })
+        }
+        return replyMessage;
     },
 
     // 建立flex button option
+    // dataList (object || array)
     createOption: function(dataList, setting) {
         dataString = (element) => {
             const { type, date, originalLocation, user } = setting;
             switch (type) {
                 case 'addFavorite':
-                    return `type=insert&user=${user}&location=${element.locationName}`;
+                    return `type=add&user=${user}&location=${element.locationName}`;
                 case 'search':
-                    return `type=flex&message=${element.locationName}/${date ? date : '今天'}/${originalLocation}`;
+                    return `type=search&message=${element.locationName || element}/${date ? date : '今天'}/${originalLocation || ''}`;
                 case 'deleteFavorite':
-                    return `type=delete&user=${user}&location=${element}`
+                    return `type=delete&user=${user}&location=${element}`;
             }
         };
         let option = [];
@@ -86,11 +89,11 @@ module.exports = {
         switch (date) {
             case '今天':
             case '':
-                return 0
+                return 0;
             case '明天':
-                return 1
+                return 1;
             case '後天':
-                return 2
+                return 2;
         }
     },
 
@@ -117,7 +120,7 @@ module.exports = {
                         layout: "vertical",
                         contents: [{
                             type: "text",
-                            text: "你484要查:",
+                            text: "你484要查:"
                         }]
                     },
                     footer: {

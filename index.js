@@ -12,9 +12,9 @@ const {
     readAllData,
     setKeyword,
     setFavorite,
-    showDeleteList,
+    showMyList,
     deleteKeyword,
-    resetTable
+    // resetTable
 } = require('./handler/dbhandler');
 const admin = process.env.admin || require('./config').admin;
 
@@ -51,70 +51,84 @@ function handleEvent(event) {
         const userInputStr = event.message.text.replace(/\s+/g, ""); // 去空白
         const tidalRegex = /^[^a-zA-Z0-9]{2,}潮汐/; // 開頭非英文或數字,接潮汐
         const settingRegex = /^新增/; // 新增常用地點
-        if (event.message.text === '說明') {
-            // 說明
-            return client.replyMessage(event.replyToken, {
-                type: 'text',
-                text: `【查詢台灣各地潮汐】\n\n查詢格式為:\n【地點】+潮汐+【今天/明天/後天】\n(時間不填則搜尋今天)\n\n【範例如下】:\n三芝潮汐\n石門潮汐明天`
-            });
-        } else if (tidalRegex.test(userInputStr)) {
-            // 問潮汐
-            const echo = getTidalByText(userInputStr, tidalData);
-            return client.replyMessage(event.replyToken, echo);
-        } else if (settingRegex.test(userInputStr)) {
-            // 設定常用地點
-            const keyword = userInputStr.split("新增")[1];
-            setFavorite(event.source.userId, keyword, tidalData, function(item) {
-                return client.replyMessage(event.replyToken, item);
-            });
-        } else if (event.message.text === '刪除') {
-            showDeleteList(event.source.userId, function(item) {
-                return client.replyMessage(event.replyToken, item);
-            });
-        } else if (event.message.text === 'insert' && isAdmin) {
-            insertData();
-            return Promise.resolve(null);
-        } else if (event.message.text === 'read' && isAdmin) {
-            readAllData(function(item) {
-                // console.log(item)
-                let str = '';
-                item.forEach((element, index) => {
-                    str += `【${index + 1}】 ${element.id}\n${element.keywords}\n`
-                });
+        switch (true) {
+            case (event.message.text === '說明'):
+                // 說明
                 return client.replyMessage(event.replyToken, {
                     type: 'text',
-                    text: str
+                    text: `【查詢台灣各地潮汐】\n\n查詢格式為:\n【地點】+潮汐+【今天/明天/後天】\n(時間不填則搜尋今天)\n\n【範例如下】:\n三芝潮汐\n石門潮汐明天`
                 });
-            })
-        } else if (event.message.text === 'reset' && isAdmin) {
-            resetTable(function(msg) {
-                return client.replyMessage(event.replyToken, msg);
-            });
-        } else {
-            return client.replyMessage(event.replyToken, [{
-                    type: 'text',
-                    text: `公蝦咪挖溝 聽某喇`
-                },
-                {
-                    type: 'text',
-                    text: `請輸入:說明`
-                }
-            ]);
+            case (tidalRegex.test(userInputStr)):
+                // 問潮汐
+                const echo = getTidalByText(userInputStr, tidalData);
+                return client.replyMessage(event.replyToken, echo);
+            case (settingRegex.test(userInputStr)):
+                // 設定常用地點
+                const keyword = userInputStr.split("新增")[1];
+                setFavorite(event.source.userId, keyword, tidalData, function(item) {
+                    return client.replyMessage(event.replyToken, item);
+                });
+                break;
+            case (event.message.text === '刪除'):
+                // 刪除常用地點
+                showMyList(event.source.userId, 'deleteFavorite', function(item) {
+                    return client.replyMessage(event.replyToken, item);
+                });
+                break;
+            case (event.message.text === '常用'):
+                // 查詢常用地點
+                showMyList(event.source.userId, 'search', function(item) {
+                    return client.replyMessage(event.replyToken, item);
+                });
+                break;
+            case (event.message.text === 'insert' && isAdmin):
+                insertData();
+                return Promise.resolve(null);
+            case (event.message.text === 'read' && isAdmin):
+                readAllData(function(item) {
+                    let str = '';
+                    item.forEach((element, index) => {
+                        str += `【${index + 1}】 ${element.id}\n${element.keywords}\n`
+                    });
+                    return client.replyMessage(event.replyToken, {
+                        type: 'text',
+                        text: str
+                    });
+                })
+                break;
+                // case (event.message.text === 'reset' && isAdmin):
+                //     resetTable(function(msg) {
+                //         return client.replyMessage(event.replyToken, msg);
+                //     });
+                //     break;
+            default:
+                return client.replyMessage(event.replyToken, [{
+                        type: 'text',
+                        text: `公蝦咪挖溝 聽某喇`
+                    },
+                    {
+                        type: 'text',
+                        text: `請輸入:說明`
+                    }
+                ]);
         }
     } else if (event.type === 'postback') {
         // 處理postback
         const data = querystring.parse(event.postback.data);
-        if (data.type === 'flex') {
-            return client.replyMessage(event.replyToken,
-                getTidalByPostback(data.message, tidalData));
-        } else if (data.type === 'insert') {
-            setKeyword(event.source.userId, data.location, function(item) {
-                return client.replyMessage(event.replyToken, item);
-            });
-        } else if (data.type === 'delete') {
-            deleteKeyword(event.source.userId, data.location, function(item) {
-                return client.replyMessage(event.replyToken, item);
-            });
+        const userId = event.source.userId;
+        const location = data.location;
+        const callback = item => {
+            return client.replyMessage(event.replyToken, item);
+        }
+        switch (data.type) {
+            case 'search':
+                return client.replyMessage(event.replyToken, getTidalByPostback(data.message, tidalData));
+            case 'add':
+                setKeyword(userId, location, callback);
+                break;
+            case 'delete':
+                deleteKeyword(userId, location, callback);
+                break;
         }
     } else {
         // 其餘不處理

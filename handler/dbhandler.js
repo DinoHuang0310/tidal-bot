@@ -35,9 +35,7 @@ module.exports = {
     readAllData: function(callback) {
         pool.connect((err, client, done) => {
             if (err) throw err;
-            const query = `
-                SELECT * FROM ${tableName};
-            `;
+            const query = `SELECT * FROM ${tableName};`;
             client.query(query, (err, res) => {
                 if (err) {
                     console.log(err.stack);
@@ -111,7 +109,7 @@ module.exports = {
         }
     },
 
-    getUserDataById: async function(id) {;
+    getUserDataById: async function(id) {
         return (async() => {
             const client = await pool.connect();
             try {
@@ -163,15 +161,29 @@ module.exports = {
                     }
                 }
             })
+        } else {
+            // 查詢結果過多
+            callback({
+                type: 'text',
+                text: `你的地點查詢結果過多~~ 下精準一點 董?`
+            });
         }
     },
 
-    showDeleteList: async function(id, callback) {
+    showMyList: async function(id, action, callback) {
         const userData = await module.exports.getUserDataById(id);
+        setTitle = () => {
+            switch (action) {
+                case 'deleteFavorite':
+                    return '請選擇要刪除的地點:';
+                case 'search':
+                    return '請選擇地點:';
+            }
+        }
         if (userData.length) {
             callback({
                 type: "flex",
-                altText: "請選擇要刪除的地點:",
+                altText: setTitle(),
                 contents: {
                     type: "bubble",
                     body: {
@@ -179,13 +191,13 @@ module.exports = {
                         layout: "vertical",
                         contents: [{
                             type: "text",
-                            text: "請選擇要刪除的地點:",
+                            text: setTitle()
                         }]
                     },
                     footer: {
                         type: "box",
                         layout: "vertical",
-                        contents: createOption(userData, { type: 'deleteFavorite', user: id })
+                        contents: createOption(userData, { type: action, user: id })
                     },
                     styles: {
                         footer: {
